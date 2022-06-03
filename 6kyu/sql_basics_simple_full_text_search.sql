@@ -48,3 +48,17 @@ FROM
   FROM Product
 )x
 Where ContainsAwesome = true
+
+-- example using rank
+SELECT 
+    courses.id,
+    courses.title,
+    courses.description,
+    ts_rank(to_tsvector(courses.title), query) as rank_title,
+    ts_rank(to_tsvector(courses.description), query) as rank_description
+FROM 
+    courses, 
+    to_tsvector(courses.title || courses.description) document,
+    to_tsquery('sales') query
+WHERE query @@ document
+ORDER BY rank_description, rank_title DESC
