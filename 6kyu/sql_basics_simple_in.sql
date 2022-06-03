@@ -35,3 +35,5 @@ SELECT *
         FROM sales s
           WHERE s.price > 98.00
   )
+
+-- https://www.sqltutorial.org/sql-subquery/
