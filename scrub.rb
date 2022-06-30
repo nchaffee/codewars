@@ -3,7 +3,9 @@ module Scrub
 
     def filename
         str = gets.chomp
-        puts str.downcase.tr(' ','_').tr(':!','')
+        %w{rb sql js}.each do |ext|
+            puts str.downcase.tr(' ','_').tr(':!','').concat('.' + ext)
+        end
     end
 end
 
