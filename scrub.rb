@@ -3,7 +3,7 @@ module Scrub
 
     def filename
         str = gets.chomp
-        puts str.downcase.delete(':').tr(' ','_')
+        puts str.downcase.tr(' ','_').tr(':!','')
     end
 end
 
