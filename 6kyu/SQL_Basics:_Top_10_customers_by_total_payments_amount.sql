@@ -14,8 +14,6 @@
 
 -- and has the following requirements:
 -- only returns the 10 top customers, ordered by total amount spent from highest to lowest
-
-
 SELECT 
   customer.customer_id as customer_id, 
   customer.email as email, 
@@ -25,3 +23,37 @@ FROM customer
 INNER JOIN payment ON customer.customer_id = payment.customer_id GROUP BY customer.customer_id
 ORDER BY total_amount DESC
 LIMIT 10;
+
+-- nested select, more explicit
+select customer_id, email, payments_count, total_amount from (
+select
+  customer.customer_id
+  , customer.email
+  , count(payment.payment_id) as payments_count
+  , cast(sum(payment.amount) as float) as total_amount
+  , rank() over (order by sum(payment.amount) desc) as ranking
+from
+  customer
+  join
+    payment
+  on
+    customer.customer_id = payment.customer_id
+group by
+  customer.customer_id) as t1 where t1.ranking <= 10;
+
+-- use lateral
+select 
+  customer_id,
+  email,
+  payments_count,
+  total_amount
+from customer c,
+lateral (
+  select  
+    count(payment_id) payments_count,
+    sum(amount)::float as total_amount 
+  from payment p
+  where p.customer_id = c.customer_id
+) _payment_query
+order by total_amount desc
+limit 10
